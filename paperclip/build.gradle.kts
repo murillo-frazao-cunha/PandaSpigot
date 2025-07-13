@@ -45,3 +45,12 @@ tasks {
         }
     }
 }
+
+// create task sendToNodes
+tasks.register<Exec>("deployPluginToNodes") {
+    group = "deployment"
+    description = "Envia o plugin via SFTP e substitui nas nodes do Pterodactyl"
+
+    // Passa o nome como argumento para o script
+    commandLine("bash", "./scripts/send-to-nodes.sh", "paperclip.jar")
+}
