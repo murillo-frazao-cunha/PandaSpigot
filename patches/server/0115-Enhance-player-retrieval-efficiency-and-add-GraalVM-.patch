@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: murillo <murillofrazaocunha@gmail.com>
+Date: Sun, 13 Jul 2025 19:31:08 -0300
+Subject: [PATCH] Enhance player retrieval efficiency and add GraalVM
+ dependencies
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 83dcd2285e088f8620831e20893c44a122779daf..028b0983632c8fa3e5e79977c246a50c156974cf 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -47,6 +47,16 @@ dependencies {
+ 
+     testImplementation("junit:junit:4.11")
+     testImplementation("org.hamcrest:hamcrest-library:1.3")
++
++    // GraalVM dependencies
++    val graalvmVersion = "21.3.3.1" // Recomendo usar uma versão mais recente
++    implementation("org.graalvm.sdk:graal-sdk:${graalvmVersion}")
++    implementation("org.graalvm.truffle:truffle-api:${graalvmVersion}")
++    implementation("org.graalvm.js:js:${graalvmVersion}")
++    implementation("org.graalvm.js:js-scriptengine:${graalvmVersion}")
++    // Implementação da linguagem JavaScript (necessária para o erro reportado)
++    runtimeOnly("org.graalvm.js:js:$graalvmVersion")
++    runtimeOnly("org.graalvm.js:js-scriptengine:$graalvmVersion")
+ }
+ 
+ fun TaskContainer.registerRunTask(
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 0c6cdfed088a26380e6fe7052e747efeedda7b1e..b3ed80f2fde5e280963fa6ec4344812e2c05fc99 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -436,27 +436,13 @@ public final class CraftServer implements Server {
+     @Override
+     @Deprecated
+     public Player getPlayer(final String name) {
++        // Modified from the original to use playerList.getPlayer(name) for efficiency
+         Validate.notNull(name, "Name cannot be null");
+-
+-        Player found = getPlayerExact(name);
+-        // Try for an exact match first.
+-        if (found != null) {
+-            return found;
+-        }
+-
+-        String lowerName = name.toLowerCase();
+-        int delta = Integer.MAX_VALUE;
+-        for (Player player : getOnlinePlayers()) {
+-            if (player.getName().toLowerCase().startsWith(lowerName)) {
+-                int curDelta = Math.abs(player.getName().length() - lowerName.length());
+-                if (curDelta < delta) {
+-                    found = player;
+-                    delta = curDelta;
+-                }
+-                if (curDelta == 0) break;
+-            }
+-        }
+-        return found;
++        Object[] list = playerList.players.stream().filter(player -> {
++            this.logger.info(player.getName());
++            return player.getName().equals(name);
++        }).toArray();
++        return (list.length > 0) ? ((EntityPlayer) list[0]).getBukkitEntity() : null;
+     }
+ 
+     @Override
