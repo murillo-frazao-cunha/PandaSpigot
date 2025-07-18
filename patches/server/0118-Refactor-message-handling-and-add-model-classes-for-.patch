@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: murillo <murillofrazaocunha@gmail.com>
+Date: Thu, 17 Jul 2025 23:22:13 -0300
+Subject: [PATCH] Refactor message handling and add model classes for sound
+ management
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
+index 01f616bba59dd0a443a9e0e7e514e849dce950bd..991143aef2f39526a11f2b3cdacb20e763236e65 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
+@@ -24,6 +24,8 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
+     }
+ 
+     public void sendMessage(String message) {
++
++
+         for (IChatBaseComponent component : CraftChatMessage.fromString(message)) {
+             commandBlock.sendMessage(component);
+         }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 7a47f4125a772dfbbb2fc7b84f0292d42d83d100..491c36866357df7da2383392de3daa60b8d14183 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -146,11 +146,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     @Override
+     public void sendRawMessage(String message) {
+         if (getHandle().playerConnection == null) return;
+-
+-        PacketPlayOutChat packet = new PacketPlayOutChat();
+-        packet.components = TextComponent.fromLegacyText(message);
+-        getHandle().playerConnection.sendPacket(packet);
+-
++        spigot().sendMessage(TextComponent.fromLegacyText(message));
+     }
+ 
+     @Override
