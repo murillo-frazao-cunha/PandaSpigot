@@ -45,9 +45,9 @@ for PLUGIN_NAME in "\${PLUGINS[@]}"; do
         server_id=\$(echo "\$plugin_path" | awk -F'/' '{print \$6}')
 
         if [[ -n "\$server_id" ]]; then
-            AFFECTED_CONTAINERS["\$server_id"]=1  # Adiciona ao array associativo
+            AFFECTED_CONTAINERS["\$server_id"]=1
         fi
-    done < <(find "\$PTERO_VOLUME_PATH" -type f -path "*/plugins/\$PLUGIN_NAME" 2>/dev/null)
+    done < <(find "\$PTERO_VOLUME_PATH" -type f -name "\$PLUGIN_NAME" 2>/dev/null)
 done
 
 # Reinicia todos os containers afetados
