@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: murillo <murillofrazaocunha@gmail.com>
+Date: Thu, 17 Jul 2025 23:12:47 -0300
+Subject: [PATCH] Add model classes for FadeType, RepeatMode, SoundCategory,
+ and Note; deprecate old implementations
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index b3ed80f2fde5e280963fa6ec4344812e2c05fc99..9e7750afa681faee60faa88a9e14ac5f210b5c08 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
+ 
+ import javax.imageio.ImageIO;
+ 
++import com.xxmicloxx.NoteBlockAPI.NoteBlockAPI;
+ import net.minecraft.server.*;
+ 
+ import org.bukkit.BanList;
+@@ -173,6 +174,7 @@ public final class CraftServer implements Server {
+     static {
+         ConfigurationSerialization.registerClass(CraftOfflinePlayer.class);
+         CraftItemFactory.instance();
++        new NoteBlockAPI();
+     }
+ 
+     public CraftServer(MinecraftServer console, PlayerList playerList) {
