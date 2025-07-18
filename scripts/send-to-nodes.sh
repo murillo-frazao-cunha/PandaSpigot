@@ -24,7 +24,7 @@ for node in "${NODES[@]}"; do
     echo "📤 Enviando plugins via SFTP..."
     sshpass -p "$PASS" sftp -o StrictHostKeyChecking=no -o Port=$PORT "$USER@$HOST" <<EOF
 mkdir -p $REMOTE_TMP_DIR
-$(for plugin in "${PLUGINS[@]}"; do echo "put $plugin $REMOTE_TMP_DIR/$plugin"; done)
+$(for plugin in "${PLUGINS[@]}"; do echo "put /var/jenkins_home/workspace/pandaspigot/$plugin $REMOTE_TMP_DIR/$plugin"; done)
 bye
 EOF
 
